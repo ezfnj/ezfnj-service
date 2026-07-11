@@ -1,1 +1,1163 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EZFNJ Service | Next-Gen OSINT & Cyber Intelligence Platform</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #030508;
+            --bg-card: rgba(13, 17, 23, 0.75);
+            --bg-card-hover: rgba(22, 28, 40, 0.9);
+            --accent-purple: #a855f7;
+            --accent-purple-glow: rgba(168, 85, 247, 0.45);
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --border-glow: rgba(168, 85, 247, 0.35);
+            --border-light: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --text-muted: #64748b;
+            --accent-green: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Ambient Background */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 80%);
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.45;
+            animation: floatOrb 20s infinite alternate cubic-bezier(0.45, 0, 0.55, 1);
+        }
+
+        .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, var(--accent-purple) 0%, transparent 70%); top: -100px; left: 20%; }
+        .orb-2 { width: 600px; height: 600px; background: radial-gradient(circle, #3b82f6 0%, transparent 70%); bottom: 10%; right: -100px; animation-delay: -7s; }
+        .orb-3 { width: 400px; height: 400px; background: radial-gradient(circle, #06b6d4 0%, transparent 70%); top: 45%; left: -100px; animation-delay: -14s; }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(80px, 60px) scale(1.15); }
+            100% { transform: translate(-50px, 100px) scale(0.9); }
+        }
+
+        /* Header Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 18px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(3, 5, 8, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-light);
+            z-index: 1000;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 21px;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-badge {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 25px var(--accent-purple-glow);
+            color: #fff;
+            font-size: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+        }
+
+        .brand-logo:hover .logo-badge {
+            transform: rotate(180deg) scale(1.08);
+            box-shadow: 0 0 35px rgba(168, 85, 247, 0.8);
+        }
+
+        nav { display: flex; align-items: center; gap: 32px; }
+        nav a { color: var(--text-sub); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.3s ease; }
+        nav a:hover { color: #fff; }
+
+        .country-selector {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px;
+            border-radius: 30px;
+            border: 1px solid var(--border-light);
+        }
+
+        .country-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .country-btn.active {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(168, 85, 247, 0.4);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 160px 20px 80px;
+            text-align: center;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(168, 85, 247, 0.12);
+            border: 1px solid var(--border-glow);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #c084fc;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 64px;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 24px;
+            background: linear-gradient(180deg, #ffffff 30%, rgba(255, 255, 255, 0.6) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p { font-size: 19px; color: var(--text-sub); max-width: 720px; margin: 0 auto 40px; line-height: 1.6; }
+
+        .btn-discord {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #3b82f6);
+            color: #fff;
+            padding: 16px 36px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 0 35px rgba(168, 85, 247, 0.4);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-discord:hover { transform: translateY(-3px); box-shadow: 0 0 50px rgba(168, 85, 247, 0.7); }
+
+        /* Metrics Bar */
+        .metrics-section { max-width: 1200px; margin: 0 auto 80px; padding: 0 24px; }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            background: rgba(13, 17, 23, 0.5);
+            border: 1px solid var(--border-light);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .metric-item { text-align: center; }
+        .metric-value { font-family: 'Space Grotesk', sans-serif; font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #c084fc, var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .metric-label { color: var(--text-sub); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Vector Capabilities Section & Shop Section */
+        .capabilities-section, .shop-section { max-width: 1200px; margin: 60px auto 40px; padding: 0 24px; }
+        .section-header { text-align: center; margin-bottom: 50px; }
+        .section-header h2 { font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 700; margin-bottom: 12px; }
+        .section-header p { color: var(--text-sub); font-size: 16px; }
+
+        .vector-grid, .shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px; }
+        .vector-card, .shop-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(15px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .vector-card:hover, .shop-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(168, 85, 247, 0.2);
+            background: var(--bg-card-hover);
+        }
+
+        .vector-header, .shop-card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+        .vector-icon, .shop-card-icon { width: 46px; height: 46px; border-radius: 12px; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--border-glow); display: flex; align-items: center; justify-content: center; color: var(--accent-purple); font-size: 20px; }
+        .vector-title, .shop-card-title { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; color: #fff; }
+        .vector-desc, .shop-card-desc { color: var(--text-sub); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+
+        .vector-trigger, .shop-card-action {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .vector-trigger:hover, .shop-card-action:hover { border-color: var(--accent-purple); background: rgba(168, 85, 247, 0.12); }
+        .trigger-text, .action-text { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #c084fc; }
+        .trigger-btn, .action-btn { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+
+        /* Shop Custom Badges */
+        .shop-badge-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .shop-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .badge-lifetime { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-payment { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .shop-price { font-size: 24px; font-weight: 800; color: #fff; font-family: 'Space Grotesk', sans-serif; display: flex; align-items: center; gap: 4px; margin-bottom: 8px;}
+        .shop-price span { font-size: 14px; color: var(--text-muted); font-weight: 400; }
+
+        /* Lightbox Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 5, 8, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+
+        .intel-modal {
+            width: 100%;
+            max-width: 520px;
+            background: #06090e;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 0 50px rgba(168, 85, 247, 0.25), 0 25px 60px rgba(0, 0, 0, 0.8);
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.active .intel-modal { transform: scale(1); }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .modal-title-wrapper { display: flex; align-items: center; gap: 10px; font-family: 'Space Grotesk', sans-serif; font-size: 19px; font-weight: 700; color: #fff; }
+        .modal-title-wrapper i { color: var(--accent-purple); }
+        .modal-close { width: 28px; height: 28px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 50%; color: var(--text-sub); display: flex; align-items: center; justify-content: center; cursor: font-size: 14px; transition: all 0.2s; }
+        .modal-close:hover { background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.4); }
+
+        .data-list { display: flex; flex-direction: column; gap: 12px; }
+        .data-item { display: flex; justify-content: space-between; align-items: center; font-size: 14px; padding: 4px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.02); }
+        .data-item:last-child { border: none; }
+        .item-label { color: var(--text-sub); font-weight: 500; }
+        .item-value { font-family: 'JetBrains Mono', monospace; color: var(--accent-purple); font-weight: 600; font-size: 13px; }
+
+        /* Pipeline */
+        .pipeline-section { max-width: 1200px; margin: 100px auto; padding: 0 24px; }
+        .pipeline-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .pipeline-step { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 16px; padding: 30px 24px; }
+        .step-num { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--accent-purple); background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); padding: 4px 10px; border-radius: 20px; display: inline-block; margin-bottom: 16px; }
+        .pipeline-step h3 { font-family: 'Space Grotesk', sans-serif; font-size: 18px; color: #fff; margin-bottom: 10px; }
+        .pipeline-step p { color: var(--text-sub); font-size: 14px; line-height: 1.6; }
+
+        /* Terms & Knowledge Base Grid */
+        .terms-section { max-width: 1200px; margin: 100px auto; padding: 0 24px; }
+        .search-bar-wrapper { position: relative; max-width: 600px; margin: 0 auto 40px; }
+        .search-bar-wrapper i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .search-bar { width: 100%; padding: 16px 20px 16px 54px; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 30px; color: #fff; font-size: 15px; outline: none; }
+        .search-bar:focus { border-color: var(--accent-purple); box-shadow: 0 0 25px rgba(168, 85, 247, 0.25); }
+
+        .terms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .term-box { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 14px; padding: 24px; }
+        .term-box h3 { font-family: 'Space Grotesk', sans-serif; font-size: 18px; color: var(--accent-purple); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .term-box p { color: var(--text-sub); font-size: 14px; line-height: 1.6; }
+
+        /* FAQ Accordion */
+        .faq-section { max-width: 900px; margin: 100px auto; padding: 0 24px; }
+        .faq-item { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
+        .faq-header { padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 600; }
+        .faq-header i { color: var(--accent-purple); transition: transform 0.3s; }
+        .faq-item.active .faq-header i { transform: rotate(180deg); }
+        .faq-body { padding: 0 24px 20px; color: var(--text-sub); font-size: 14px; line-height: 1.6; display: none; }
+        .faq-item.active .faq-body { display: block; }
+
+        /* FOOTER 3 COLUMNAS */
+        footer {
+            border-top: 1px solid var(--border-light);
+            background: #030508;
+            padding: 80px 6% 30px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 50px;
+            padding-bottom: 60px;
+        }
+
+        .footer-col .brand-logo {
+            margin-bottom: 18px;
+        }
+
+        .footer-col h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 22px;
+        }
+
+        .footer-col p {
+            color: var(--text-sub);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: var(--text-sub);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-bottom p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #00e699;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00e699;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #00e699;
+        }
+
+        @media (max-width: 968px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 35px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 16px 20px; }
+            nav { display: none; }
+            .hero h1 { font-size: 38px; }
+            .vector-grid, .shop-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background -->
+    <div class="ambient-bg">
+        <div class="grid-overlay"></div>
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <a href="#" class="brand-logo">
+            <div class="logo-badge"><i class="fa-solid fa-eye-low-vision"></i></div>
+            EZFNJ SERVICE
+        </a>
+        <nav>
+            <a href="#vectors" data-i18n="nav-vectors">Vectores OSINT</a>
+            <a href="#pipeline" data-i18n="nav-pipeline">Metodología</a>
+            <a href="#terms" data-i18n="nav-terms">Glosario</a>
+            <a href="#shop" data-i18n="nav-shop">Tienda Premium</a>
+            <a href="#faq" data-i18n="nav-faq">FAQ</a>
+            <a href="https://discord.com/users/1316510002369790013" target="_blank" data-i18n="nav-pricing">Precios & DM</a>
+        </nav>
+        <div class="country-selector">
+            <button class="country-btn active" onclick="changeLang('es', this)">🇪🇸 ES</button>
+            <button class="country-btn" onclick="changeLang('en', this)">🇺🇸 EN</button>
+            <button class="country-btn" onclick="changeLang('fr', this)">🇫🇷 FR</button>
+            <button class="country-btn" onclick="changeLang('de', this)">🇩🇪 DE</button>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">
+            <i class="fa-solid fa-circle" style="font-size: 10px; color: var(--accent-cyan);"></i> 
+            <span data-i18n="hero-badge">PLATAFORMA DE INTELIGENCIA DE FUENTES ABIERTAS</span>
+        </div>
+        <h1 data-i18n="hero-title">Inteligencia Cyber OSINT Avanzada & Análisis de Datos</h1>
+        <p data-i18n="hero-desc">EZFNJ Service ofrece capacidades avanzadas de recolección de información pública, correlación de identidades digitales y análisis de infraestructura cibernética.</p>
+        <div class="cta-group">
+            <a href="https://discord.com/users/1316510002369790013" target="_blank" class="btn-discord">
+                <i class="fa-brands fa-discord"></i> <span data-i18n="btn-discord">Consultar Precios en DM</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Metrics Bar -->
+    <section class="metrics-section">
+        <div class="metrics-grid">
+            <div class="metric-item"><div class="metric-value">500+</div><div class="metric-label" data-i18n="m-platforms">Plataformas Rastreadas</div></div>
+            <div class="metric-item"><div class="metric-value">99.8%</div><div class="metric-label" data-i18n="m-precision">Precisión de Correlación</div></div>
+            <div class="metric-item"><div class="metric-value">&lt; 24h</div><div class="metric-label" data-i18n="m-delivery">Tiempo de Entrega</div></div>
+            <div class="metric-item"><div class="metric-value">100%</div><div class="metric-label" data-i18n="m-support">Confidencialidad</div></div>
+        </div>
+    </section>
+
+    <!-- Vectores OSINT -->
+    <section class="capabilities-section" id="vectors">
+        <div class="section-header">
+            <h2 data-i18n="sec-title">Vectores de Investigación OSINT</h2>
+            <p data-i18n="sec-desc">Haz clic en cualquier vector para previsualizar los parámetros de intelligence obtenidos.</p>
+        </div>
+
+        <div class="vector-grid">
+            <div class="vector-card">
+                <div class="vector-header">
+                    <div class="vector-icon"><i class="fa-solid fa-envelope"></i></div>
+                    <div class="vector-title" data-i18n="v-title-email">Email OSINT & Breaches</div>
+                </div>
+                <div class="vector-desc" data-i18n="email-desc">Búsqueda avanzada para extracción de cuentas vinculadas, contraseñas/hashes filtrados, usernames e identificación de número telefónico asociado.</div>
+                <div class="vector-trigger" onclick="openModal('email')">
+                    <span class="trigger-text">PREVIEW: EMAIL ANALYSIS</span>
+                    <span class="trigger-btn"><i class="fa-solid fa-chevron-right"></i> <span data-i18n="btn-preview">Vista previa</span></span>
+                </div>
+            </div>
+
+            <div class="vector-card">
+                <div class="vector-header">
+                    <div class="vector-icon"><i class="fa-solid fa-phone"></i></div>
+                    <div class="vector-title" data-i18n="v-title-phone">Phone Intelligence</div>
+                </div>
+                <div class="vector-desc" data-i18n="phone-desc">Rastreo de numeración global, titular o alias registrado, operador de red, ubicación por zona y vinculación con mensajería (WhatsApp/Telegram).</div>
+                <div class="vector-trigger" onclick="openModal('phone')">
+                    <span class="trigger-text">PREVIEW: PHONE TRACE</span>
+                    <span class="trigger-btn"><i class="fa-solid fa-chevron-right"></i> <span data-i18n="btn-preview">Vista previa</span></span>
+                </div>
+            </div>
+
+            <div class="vector-card">
+                <div class="vector-header">
+                    <div class="vector-icon"><i class="fa-solid fa-at"></i></div>
+                    <div class="vector-title" data-i18n="v-title-username">Username & Identity</div>
+                </div>
+                <div class="vector-desc" data-i18n="user-desc">Mapeo masivo en más de 500 plataformas, foros de hacking, comunidades de juegos y redes para consolidar perfiles de alias.</div>
+                <div class="vector-trigger" onclick="openModal('username')">
+                    <span class="trigger-text">PREVIEW: USERNAME RECON</span>
+                    <span class="trigger-btn"><i class="fa-solid fa-chevron-right"></i> <span data-i18n="btn-preview">Vista previa</span></span>
+                </div>
+            </div>
+
+            <div class="vector-card">
+                <div class="vector-header">
+                    <div class="vector-icon"><i class="fa-solid fa-key"></i></div>
+                    <div class="vector-title" data-i18n="v-title-password">Password & Hash Analytics</div>
+                </div>
+                <div class="vector-desc" data-i18n="pass-desc">Identificación de algoritmos criptográficos, reversing de hashes simples, patrones de contraseñas reutilizadas y nivel de entropía.</div>
+                <div class="vector-trigger" onclick="openModal('hash')">
+                    <span class="trigger-text">PREVIEW: HASH DECRYPT</span>
+                    <span class="trigger-btn"><i class="fa-solid fa-chevron-right"></i> <span data-i18n="btn-preview">Vista previa</span></span>
+                </div>
+            </div>
+
+            <div class="vector-card">
+                <div class="vector-header">
+                    <div class="vector-icon"><i class="fa-solid fa-network-wired"></i></div>
+                    <div class="vector-title" data-i18n="v-title-ip">IP & Network Recon</div>
+                </div>
+                <div class="vector-desc" data-i18n="ip-desc">Geolocalización precisa de dirección IP, detección de proveedor de internet (ISP), uso de VPN/Proxy y puertos abiertos.</div>
+                <div class="vector-trigger" onclick="openModal('ip')">
+                    <span class="trigger-text">PREVIEW: NETWORK INFO</span>
+                    <span class="trigger-btn"><i class="fa-solid fa-chevron-right"></i> <span data-i18n="btn-preview">Vista previa</span></span>
+                </div>
+            </div>
+
+            <div class="vector-card">
+                <div class="vector-header">
+                    <div class="vector-icon"><i class="fa-solid fa-id-card"></i></div>
+                    <div class="vector-title" data-i18n="v-title-metadata">Public Records & Metadata</div>
+                </div>
+                <div class="vector-desc" data-i18n="doc-desc">Extracción de datos ocultos EXIF en imágenes o PDFs (dispositivo de captura, fechas, coordenadas GPS exactas y autor).</div>
+                <div class="vector-trigger" onclick="openModal('metadata')">
+                    <span class="trigger-text">PREVIEW: METADATA EXIF</span>
+                    <span class="trigger-btn"><i class="fa-solid fa-chevron-right"></i> <span data-i18n="btn-preview">Vista previa</span></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox Modal Overlay -->
+    <div class="modal-overlay" id="previewModalOverlay" onclick="closeModal(event)">
+        <div class="intel-modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title-wrapper">
+                    <i class="fa-solid fa-terminal" id="modalIcon"></i>
+                    <span id="modalTitle">Phone Intelligence</span>
+                </div>
+                <div class="modal-close" onclick="closeModal(null)">&times;</div>
+            </div>
+            <div class="data-list" id="modalDataContent"></div>
+        </div>
+    </div>
+
+    <!-- Flujo de Trabajo -->
+    <section class="pipeline-section" id="pipeline">
+        <div class="section-header">
+            <h2 data-i18n="pipe-title">Flujo de Trabajo de Investigación</h2>
+            <p data-i18n="pipe-sub">Proceso estructurado de recolección y verificación para ofrecer informes de inteligencia exactos.</p>
+        </div>
+        <div class="pipeline-grid">
+            <div class="pipeline-step"><span class="step-num">FASE 01</span><h3 data-i18n="pipe-s1-title">Ingesta & Scope</h3><p data-i18n="pipe-s1-desc">Definición clara de los parámetros iniciales de búsqueda (emails, dominios, identidades o teléfonos).</p></div>
+            <div class="pipeline-step"><span class="step-num">FASE 02</span><h3 data-i18n="pipe-s2-title">Extracción OSINT</h3><p data-i18n="pipe-s2-desc">Barrido automatizado y manual sobre fuentes abiertas, registros públicos y foot-printing digital.</p></div>
+            <div class="pipeline-step"><span class="step-num">FASE 03</span><h3 data-i18n="pipe-s3-title">Correlación de Datos</h3><p data-i18n="pipe-s3-desc">Cruce de información obtenida para descartar falsos positivos y verificar coincidencias reales.</p></div>
+            <div class="pipeline-step"><span class="step-num">FASE 04</span><h3 data-i18n="pipe-s4-title">Informe Final</h3><p data-i18n="pipe-s4-desc">Consolidación de parámetros en un reporte estructurado y comprensible entregado por DM.</p></div>
+        </div>
+    </section>
+
+    <!-- Glosario -->
+    <section class="terms-section" id="terms">
+        <div class="section-header">
+            <h2 data-i18n="terms-heading">Glosario & Metodología OSINT</h2>
+            <p data-i18n="terms-sub">Conceptos clave utilizados en el análisis de fuentes abiertas e inteligencia cibernética.</p>
+        </div>
+        <div class="search-bar-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" class="search-bar" id="termSearch" placeholder="Buscar término OSINT (ej. Doxing, SOCMINT, Footprinting...)" onkeyup="filterTerms()">
+        </div>
+        <div class="terms-grid" id="termsGrid">
+            <div class="term-box">
+                <h3><i class="fa-solid fa-eye"></i> <span data-i18n="g-t1">OSINT</span></h3>
+                <p data-i18n="g-d1">Open Source Intelligence: Recolección y análisis de datos obtenidos de fuentes públicas y abiertas para generar inteligencia estratégica.</p>
+            </div>
+            <div class="term-box">
+                <h3><i class="fa-solid fa-diagram-project"></i> <span data-i18n="g-t2">Footprinting</span></h3>
+                <p data-i18n="g-d2">Proceso metódico para recopilar toda la información pública posible de una organización o infraestructura antes de una auditoría.</p>
+            </div>
+            <div class="term-box">
+                <h3><i class="fa-solid fa-share-nodes"></i> <span data-i18n="g-t3">SOCMINT</span></h3>
+                <p data-i18n="g-d3">Social Media Intelligence: Técnicas especializadas en la agregación y análisis de datos en redes sociales y plataformas digitales.</p>
+            </div>
+            <div class="term-box">
+                <h3><i class="fa-solid fa-file-contract"></i> <span data-i18n="g-t4">Metadata Analysis</span></h3>
+                <p data-i18n="g-d4">Extracción de información oculta en archivos (EXIF, autor, dispositivo, coordenadas GPS) contenidos en documentos e imágenes.</p>
+            </div>
+            <div class="term-box">
+                <h3><i class="fa-solid fa-shield-halved"></i> <span data-i18n="g-t5">Threat Intelligence</span></h3>
+                <p data-i18n="g-d5">Evaluación de ciberamenazas basada en el rastreo de vectores de ataque, infraestructura maliciosa e indicadores de compromiso (IoCs).</p>
+            </div>
+            <div class="term-box">
+                <h3><i class="fa-solid fa-earth-americas"></i> <span data-i18n="g-t6">GEOINT</span></h3>
+                <p data-i18n="g-d6">Geospatial Intelligence: Análisis de imágenes satelitales, mapas de acceso público y referencias geográficas para la ubicación exacta.</p>
+            </div>
+            <div class="term-box">
+                <h3><i class="fa-solid fa-user-xmark"></i> <span data-i18n="g-t7">Doxing</span></h3>
+                <p data-i18n="g-d7">Recopilación y publicación maliciosa de datos privados, identificativos o confidenciales de un individuo sin su consentimiento en internet.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- TIENDA SHOP PREMIUM (AHORA DEBAJO DEL GLOSARIO) -->
+    <section class="shop-section" id="shop">
+        <div class="section-header">
+            <h2 data-i18n="shop-title">Digital Premium Shop</h2>
+            <p data-i18n="shop-desc">Adquiere tus cuentas premium
+                son lifetime con autorenovacion las cuentas pero no nos hacemos cargo si son baneadas pero igualmente es muy dificil que ocurra
+
+.</p>
+        </div>
+
+        <div class="shop-grid">
+            <!-- Netflix -->
+            <div class="shop-card">
+                <div class="shop-badge-container">
+                    <span class="shop-badge badge-lifetime" data-i18n="shop-life">Lifetime</span>
+                    <span class="shop-badge badge-payment" data-i18n="shop-method">Gift Card Only</span>
+                </div>
+                <div class="shop-card-header">
+                    <div class="shop-card-icon"><i class="fa-solid fa-tv"></i></div>
+                    <div class="shop-card-title">Netflix Acc</div>
+                </div>
+                <div class="shop-price">10$ <span data-i18n="shop-once">pago único</span></div>
+                <div class="shop-card-desc" data-i18n="shop-dm-alert">(preguntar al dm primero antes de comprar)</div>
+                <a href="https://discord.com/users/1316510002369790013" target="_blank" class="shop-card-action">
+                    <span class="action-text">ORDER VIA DISCORD</span>
+                    <span class="action-btn"><i class="fa-brands fa-discord"></i> DM</span>
+                </a>
+            </div>
+
+            <!-- Disney+ -->
+            <div class="shop-card">
+                <div class="shop-badge-container">
+                    <span class="shop-badge badge-lifetime" data-i18n="shop-life">Lifetime</span>
+                    <span class="shop-badge badge-payment" data-i18n="shop-method">Gift Card Only</span>
+                </div>
+                <div class="shop-card-header">
+                    <div class="shop-card-icon"><i class="fa-solid fa-clapperboard"></i></div>
+                    <div class="shop-card-title">Disney+ Acc</div>
+                </div>
+                <div class="shop-price">12$ <span data-i18n="shop-once">pago único</span></div>
+                <div class="shop-card-desc" data-i18n="shop-dm-alert">(preguntar al dm primero antes de comprar)</div>
+                <a href="https://discord.com/users/1316510002369790013" target="_blank" class="shop-card-action">
+                    <span class="action-text">ORDER VIA DISCORD</span>
+                    <span class="action-btn"><i class="fa-brands fa-discord"></i> DM</span>
+                </a>
+            </div>
+
+            <!-- Prime Video -->
+            <div class="shop-card">
+                <div class="shop-badge-container">
+                    <span class="shop-badge badge-lifetime">Lifetime (FA)</span>
+                    <span class="shop-badge badge-payment" data-i18n="shop-method">Gift Card Only</span>
+                </div>
+                <div class="shop-card-header">
+                    <div class="shop-card-icon"><i class="fa-solid fa-video"></i></div>
+                    <div class="shop-card-title">Prime Video Acc</div>
+                </div>
+                <div class="shop-price">12$ <span data-i18n="shop-once">pago único</span></div>
+                <div class="shop-card-desc" data-i18n="shop-dm-alert">(preguntar al dm primero antes de comprar)</div>
+                <a href="https://discord.com/users/1316510002369790013" target="_blank" class="shop-card-action">
+                    <span class="action-text">ORDER VIA DISCORD</span>
+                    <span class="action-btn"><i class="fa-brands fa-discord"></i> DM</span>
+                </a>
+            </div>
+
+            <!-- Crunchyroll -->
+            <div class="shop-card">
+                <div class="shop-badge-container">
+                    <span class="shop-badge badge-lifetime">Lifetime (Big Fan)</span>
+                    <span class="shop-badge badge-payment" data-i18n="shop-method">Gift Card Only</span>
+                </div>
+                <div class="shop-card-header">
+                    <div class="shop-card-icon"><i class="fa-solid fa-mask"></i></div>
+                    <div class="shop-card-title">Crunchyroll Premium Acc</div>
+                </div>
+                <div class="shop-price">8$ <span data-i18n="shop-once">pago único</span></div>
+                <div class="shop-card-desc" data-i18n="shop-dm-alert">(preguntar al dm primero antes de comprar)</div>
+                <a href="https://discord.com/users/1316510002369790013" target="_blank" class="shop-card-action">
+                    <span class="action-text">ORDER VIA DISCORD</span>
+                    <span class="action-btn"><i class="fa-brands fa-discord"></i> DM</span>
+                </a>
+            </div>
+
+            <!-- YouTube Premium -->
+            <div class="shop-card">
+                <div class="shop-badge-container">
+                    <span class="shop-badge badge-lifetime" data-i18n="shop-life">Lifetime</span>
+                    <span class="shop-badge badge-payment" data-i18n="shop-method">Gift Card Only</span>
+                </div>
+                <div class="shop-card-header">
+                    <div class="shop-card-icon"><i class="fa-brands fa-youtube"></i></div>
+                    <div class="shop-card-title">YouTube Premium Acc</div>
+                </div>
+                <div class="shop-price">15$ <span data-i18n="shop-once">pago único</span></div>
+                <div class="shop-card-desc" data-i18n="shop-dm-alert">(preguntar al dm primero antes de comprar)</div>
+                <a href="https://discord.com/users/1316510002369790013" target="_blank" class="shop-card-action">
+                    <span class="action-text">ORDER VIA DISCORD</span>
+                    <span class="action-btn"><i class="fa-brands fa-discord"></i> DM</span>
+                </a>
+            </div>
+
+            <!-- HBO Max acc -->
+            <div class="shop-card">
+                <div class="shop-badge-container">
+                    <span class="shop-badge badge-lifetime" data-i18n="shop-life">Lifetime</span>
+                    <span class="shop-badge badge-payment" data-i18n="shop-method">Gift Card Only</span>
+                </div>
+                <div class="shop-card-header">
+                    <div class="shop-card-icon"><i class="fa-solid fa-film"></i></div>
+                    <div class="shop-card-title">HBO Max Premium Acc</div>
+                </div>
+                <div class="shop-price">12$ <span data-i18n="shop-once">pago único</span></div>
+                <div class="shop-card-desc" data-i18n="shop-dm-alert">(preguntar al dm primero antes de comprar)</div>
+                <a href="https://discord.com/users/1316510002369790013" target="_blank" class="shop-card-action">
+                    <span class="action-text">ORDER VIA DISCORD</span>
+                    <span class="action-btn"><i class="fa-brands fa-discord"></i> DM</span>
+                </a>
+            </div>
+
+            <!-- Dazn Premium -->
+            <div class="shop-card">
+                <div class="shop-badge-container">
+                    <span class="shop-badge badge-lifetime" data-i18n="shop-life">Lifetime</span>
+                    <span class="shop-badge badge-payment" data-i18n="shop-method">Gift Card Only</span>
+                </div>
+                <div class="shop-card-header">
+                    <div class="shop-card-icon"><i class="fa-solid fa-dumbbell"></i></div>
+                    <div class="shop-card-title">Dazn Premium Acc</div>
+                </div>
+                <div class="shop-price">15$ <span data-i18n="shop-once">pago único</span></div>
+                <div class="shop-card-desc" data-i18n="shop-dm-alert">(preguntar al dm primero antes de comprar)</div>
+                <a href="https://discord.com/users/1316510002369790013" target="_blank" class="shop-card-action">
+                    <span class="action-text">ORDER VIA DISCORD</span>
+                    <span class="action-btn"><i class="fa-brands fa-discord"></i> DM</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section" id="faq">
+        <div class="section-header">
+            <h2 data-i18n="faq-title">Preguntas Frecuentes</h2>
+        </div>
+        <div class="faq-item">
+            <div class="faq-header" onclick="toggleFaq(this)"><span data-i18n="faq-q1">¿Cómo realizo una consulta de servicios o precios?</span><i class="fa-solid fa-chevron-down"></i></div>
+            <div class="faq-body" data-i18n="faq-a1">Puedes contactar directamente a través de Discord mediante mensaje directo (DM). Te responderemos lo antes posible con las tarifas personalizadas según tu caso.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-header" onclick="toggleFaq(this)"><span data-i18n="faq-q2">¿Qué métodos de pago son aceptados?</span><i class="fa-solid fa-chevron-down"></i></div>
+            <div class="faq-body" data-i18n="faq-a2">Aceptamos tarjetas de regalo (Gift Cards) para la tienda premium y criptomonedas (BTC, LTC, USDT) u otros métodos que se acordarán en privado vía DM para los vectores OSINT.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-header" onclick="toggleFaq(this)"><span data-i18n="faq-q3">¿Los datos recopilados se comparten con terceros?</span><i class="fa-solid fa-chevron-down"></i></div>
+            <div class="faq-body" data-i18n="faq-a3">No. Garantizamos confidencialidad absoluta y un entorno 100% blindado. Toda la información resultante se entrega únicamente al solicitante y se elimina permanentemente.</div>
+        </div>
+    </section>
+
+    <!-- PIE DE PÁGINA (FOOTER 3 COLUMNAS) -->
+    <footer>
+        <div class="footer-container">
+            <!-- Columna 1: Brand / Descripción -->
+            <div class="footer-col">
+                <a href="#" class="brand-logo">
+                    <div class="logo-badge"><i class="fa-solid fa-eye-low-vision"></i></div>
+                    EZFNJ SERVICE
+                </a>
+                <p data-i18n="f-desc">Plataforma de investigación, inteligencia cibernética y correlación de datos en fuentes abiertas.</p>
+            </div>
+            
+            <!-- Columna 2: Enlaces Rápidos -->
+            <div class="footer-col">
+                <h4 data-i18n="f-title-links">Enlaces Rápidos</h4>
+                <ul class="footer-links">
+                    <li><a href="#vectors" data-i18n="nav-vectors">Vectores OSINT</a></li>
+                    <li><a href="#pipeline" data-i18n="nav-pipeline">Metodología</a></li>
+                    <li><a href="#terms" data-i18n="nav-terms">Glosario</a></li>
+                    <li><a href="#shop" data-i18n="nav-shop">Tienda Premium</a></li>
+                </ul>
+            </div>
+
+            <!-- Columna 3: Contacto Directo -->
+            <div class="footer-col">
+                <h4 data-i18n="f-title-contact">Contacto Directo</h4>
+                <p style="margin-bottom: 8px;">Discord: <strong style="color: #fff;">EZFNJ Service</strong></p>
+                <p data-i18n="f-contact-sub">Atención privada por mensaje directo (DM).</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 EZFNJ Service. All rights reserved.</p>
+            <div class="system-status">
+                <span class="status-dot"></span>
+                <span data-i18n="system-status">SISTEMA OSINT: OPERATIVO</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let currentLang = 'es';
+
+        // Base de datos de modales traducida
+        const modalDatabase = {
+            es: {
+                email: { title: "Email OSINT & Breaches", icon: "fa-envelope", rows: [ { label: "Cuentas Asociadas:", val: "Spotify, Steam, Instagram, PayPal" }, { label: "Contraseñas / Hashes:", val: "Pass2023! / SHA256(...)" }, { label: "Usernames Vinculados:", val: "@user_ezfnj, @shadow99" }, { label: "Número Telefónico:", val: "+34 6** *** 891 (Válido)" } ] },
+                phone: { title: "Phone Intelligence", icon: "fa-phone", rows: [ { label: "Operador:", val: "Vodafone / Movistar" }, { label: "Estado:", val: "Línea Activa" }, { label: "Región:", val: "UTC+01" }, { label: "Tipo:", val: "Móvil / Landline" } ] },
+                username: { title: "Username & Identity", icon: "fa-at", rows: [ { label: "Perfiles Activos:", val: "GitHub, Discord, TikTok, Roblox" }, { label: "Coincidencia Avatar:", val: "EXIF Match 98%" }, { label: "IP de Registro:", val: "185.220.x.x (Detección ASN)" }, { label: "Alias Alternativos:", val: "ez_hacker, shadow_dev" } ] },
+                hash: { title: "Password & Hash Analytics", icon: "fa-key", rows: [ { label: "Hash Original:", val: "5f4dcc3b5aa765d61d8327deb882cf99" }, { label: "Texto Plano:", val: "password123" }, { label: "Algoritmo:", val: "MD5 / SHA1" }, { label: "Fugas Encontradas:", val: "4 Breaches" } ] },
+                ip: { title: "IP & Network Recon", icon: "fa-network-wired", rows: [ { label: "Proveedor / ISP:", val: "Movistar / Telefonica" }, { label: "Ubicación:", val: "Madrid, España" }, { label: "Detección VPN:", val: "No (Conexión Directa)" }, { label: "Puertos Abiertos:", val: "80, 443, 22 (SSH)" } ] },
+                metadata: { title: "Public Records & Metadata", icon: "fa-id-card", rows: [ { label: "Dispositivo Captura:", val: "iPhone 14 Pro" }, { label: "Coordenadas GPS:", val: "40.4167, -3.7037 (Madrid)" }, { label: "Software Editor:", val: "Adobe Photoshop 2024" }, { label: "Metadatos Limpios:", val: "Falso (Datos Expuestos)" } ] }
+            },
+            en: {
+                email: { title: "Email OSINT & Breaches", icon: "fa-envelope", rows: [ { label: "Linked Accounts:", val: "Spotify, Steam, Instagram, PayPal" }, { label: "Passwords / Hashes:", val: "Pass2023! / SHA256(...)" }, { label: "Linked Usernames:", val: "@user_ezfnj, @shadow99" }, { label: "Phone Number:", val: "+34 6** *** 891 (Valid)" } ] },
+                phone: { title: "Phone Intelligence", icon: "fa-phone", rows: [ { label: "Carrier:", val: "Vodafone / Movistar" }, { label: "Status:", val: "Active Line" }, { label: "Region:", val: "UTC+01" }, { label: "Type:", val: "Mobile / Landline" } ] },
+                username: { title: "Username & Identity", icon: "fa-at", rows: [ { label: "Active Profiles:", val: "GitHub, Discord, TikTok, Roblox" }, { label: "Avatar Match:", val: "EXIF Match 98%" }, { label: "Registration IP:", val: "185.220.x.x (ASN Detect)" }, { label: "Alternative Aliases:", val: "ez_hacker, shadow_dev" } ] },
+                hash: { title: "Password & Hash Analytics", icon: "fa-key", rows: [ { label: "Original Hash:", val: "5f4dcc3b5aa765d61d8327deb882cf99" }, { label: "Plain Text:", val: "password123" }, { label: "Algorithm:", val: "MD5 / SHA1" }, { label: "Data Leaks:", val: "4 Breaches" } ] },
+                ip: { title: "IP & Network Recon", icon: "fa-network-wired", rows: [ { label: "Provider / ISP:", val: "Movistar / Telefonica" }, { label: "Location:", val: "Madrid, Spain" }, { label: "VPN Detection:", val: "No (Direct Connection)" }, { label: "Open Ports:", val: "80, 443, 22 (SSH)" } ] },
+                metadata: { title: "Public Records & Metadata", icon: "fa-id-card", rows: [ { label: "Capture Device:", val: "iPhone 14 Pro" }, { label: "GPS Coordinates:", val: "40.4167, -3.7037 (Madrid)" }, { label: "Editor Software:", val: "Adobe Photoshop 2024" }, { label: "Clean Metadata:", val: "False (Exposed Data)" } ] }
+            },
+            fr: {
+                email: { title: "Email OSINT & Breaches", icon: "fa-envelope", rows: [ { label: "Comptes Liés:", val: "Spotify, Steam, Instagram, PayPal" }, { label: "Mots de passe / Hashes:", val: "Pass2023! / SHA256(...)" }, { label: "Usernames Associés:", val: "@user_ezfnj, @shadow99" }, { label: "Numéro de Tél:", val: "+34 6** *** 891 (Valide)" } ] },
+                phone: { title: "Phone Intelligence", icon: "fa-phone", rows: [ { label: "Opérateur:", val: "Vodafone / Movistar" }, { label: "Statut:", val: "Ligne Active" }, { label: "Région:", val: "UTC+01" }, { label: "Type:", val: "Mobile / Ligne fixe" } ] },
+                username: { title: "Username & Identity", icon: "fa-at", rows: [ { label: "Profils Actifs:", val: "GitHub, Discord, TikTok, Roblox" }, { label: "Match Avatar:", val: "EXIF Match 98%" }, { label: "IP d'inscription:", val: "185.220.x.x (Détection ASN)" }, { label: "Pseudonymes:", val: "ez_hacker, shadow_dev" } ] },
+                hash: { title: "Password & Hash Analytics", icon: "fa-key", rows: [ { label: "Hash Original:", val: "5f4dcc3b5aa765d61d8327deb882cf99" }, { label: "Texte Brut:", val: "password123" }, { label: "Algorithme:", val: "MD5 / SHA1" }, { label: "Fuites:", val: "4 Breaches" } ] },
+                ip: { title: "IP & Network Recon", icon: "fa-network-wired", rows: [ { label: "Fournisseur / ISP:", val: "Movistar / Telefonica" }, { label: "Emplacement:", val: "Madrid, Espagne" }, { label: "Détection VPN:", val: "Non (Connexion Directe)" }, { label: "Ports Ouverts:", val: "80, 443, 22 (SSH)" } ] },
+                metadata: { title: "Public Records & Metadata", icon: "fa-id-card", rows: [ { label: "Appareil Photo:", val: "iPhone 14 Pro" }, { label: "Coordonnées GPS:", val: "40.4167, -3.7037 (Madrid)" }, { label: "Logiciel Éditeur:", val: "Adobe Photoshop 2024" }, { label: "Métadonnées:", val: "Faux (Données Exposées)" } ] }
+            },
+            de: {
+                email: { title: "Email OSINT & Breaches", icon: "fa-envelope", rows: [ { label: "Verknüpfte Konten:", val: "Spotify, Steam, Instagram, PayPal" }, { label: "Passwörter / Hashes:", val: "Pass2023! / SHA256(...)" }, { label: "Usernames:", val: "@user_ezfnj, @shadow99" }, { label: "Telefonnummer:", val: "+34 6** *** 891 (Gültig)" } ] },
+                phone: { title: "Phone Intelligence", icon: "fa-phone", rows: [ { label: "Betreiber:", val: "Vodafone / Movistar" }, { label: "Status:", val: "Aktive Linie" }, { label: "Region:", val: "UTC+01" }, { label: "Typ:", val: "Mobil / Festnetz" } ] },
+                username: { title: "Username & Identity", icon: "fa-at", rows: [ { label: "Aktive Profile:", val: "GitHub, Discord, TikTok, Roblox" }, { label: "Avatar Match:", val: "EXIF Match 98%" }, { label: "Registrierungs-IP:", val: "185.220.x.x (ASN-Erkennung)" }, { label: "Alternative Aliase:", val: "ez_hacker, shadow_dev" } ] },
+                hash: { title: "Password & Hash Analytics", icon: "fa-key", rows: [ { label: "Original Hash:", val: "5f4dcc3b5aa765d61d8327deb882cf99" }, { label: "Klartext:", val: "password123" }, { label: "Algorithmus:", val: "MD5 / SHA1" }, { label: "Datenlecks:", val: "4 Breaches" } ] },
+                ip: { title: "IP & Network Recon", icon: "fa-network-wired", rows: [ { label: "Anbieter / ISP:", val: "Movistar / Telefonica" }, { label: "Standort:", val: "Madrid, Spanien" }, { label: "VPN-Erkennung:", val: "Nein (Direkte Verbindung)" }, { label: "Offene Ports:", val: "80, 443, 22 (SSH)" } ] },
+                metadata: { title: "Public Records & Metadata", icon: "fa-id-card", rows: [ { label: "Aufnahmegerät:", val: "iPhone 14 Pro" }, { label: "GPS-Koordinaten:", val: "40.4167, -3.7037 (Madrid)" }, { label: "Editor-Software:", val: "Adobe Photoshop 2024" }, { label: "Metadaten:", val: "Falsch (Daten Exponiert)" } ] }
+            }
+        };
+
+        // Diccionario Maestro de Traducción del Sitio Web
+        const translations = {
+            es: {
+                "nav-vectors": "Vectores OSINT", "nav-shop": "Tienda Premium", "nav-pipeline": "Metodología", "nav-terms": "Glosario", "nav-faq": "FAQ", "nav-pricing": "Precios & DM",
+                "hero-badge": "PLATAFORMA DE INTELIGENCIA DE FUENTES ABIERTAS",
+                "hero-title": "Inteligencia Cyber OSINT Avanzada & Análisis de Datos",
+                "hero-desc": "EZFNJ Service ofrece capacidades avanzadas de recolección de información pública, correlación de identidades digitales y análisis de infraestructura cibernética.",
+                "btn-discord": "Consultar Precios en DM",
+                "m-platforms": "Plataformas Rastreadas", "m-precision": "Precisión de Correlación", "m-delivery": "Tiempo de Entrega", "m-support": "Confidencialidad",
+                "sec-title": "Vectores de Investigación OSINT", "sec-desc": "Haz clic en cualquier vector para previsualizar los parámetros de inteligencia obtenidos.",
+                "v-title-email": "Email OSINT & Breaches", "email-desc": "Búsqueda avanzada para extracción de cuentas vinculadas, contraseñas/hashes filtrados, usernames e identificación de número telefónico asociado.",
+                "v-title-phone": "Phone Intelligence", "phone-desc": "Rastreo de numeración global, titular o alias registrado, operador de red, ubicación por zona y vinculación con mensajería (WhatsApp/Telegram).",
+                "v-title-username": "Username & Identity", "user-desc": "Mapeo masivo en más de 500 plataformas, foros de hacking, comunidades de juegos y redes para consolidar perfiles de alias.",
+                "v-title-password": "Password & Hash Analytics", "pass-desc": "Identificación de algoritmos criptográficos, reversing de hashes simples, patrones de contraseñas reutilizadas y nivel de entropía.",
+                "v-title-ip": "IP & Network Recon", "ip-desc": "Geolocalización precisa de dirección IP, detección de proveedor de internet (ISP), uso de VPN/Proxy y puertos abiertos.",
+                "v-title-metadata": "Public Records & Metadata", "doc-desc": "Extracción de datos ocultos EXIF en imágenes o PDFs (dispositivo de captura, fechas, coordenadas GPS exactas y autor).",
+                "btn-preview": "Vista previa",
+                
+                // Tienda Traducciones (Forzadas a "Lifetime" en todos los idiomas)
+                "shop-title": "Digital Premium Shop",
+                "shop-desc": "Adquiere tus cuentas premium con soporte vitalicio garantizado.",
+                "shop-life": "Lifetime",
+                "shop-method": "Solo Tarjeta de Regalo",
+                "shop-once": "pago único",
+                "shop-dm-alert": "(preguntar al dm primero antes de comprar)",
+
+                "pipe-title": "Flujo de Trabajo de Investigación", "pipe-sub": "Proceso estructurado de recolección y verificación para ofrecer informes de inteligencia exactos.",
+                "pipe-s1-title": "Ingesta & Scope", "pipe-s1-desc": "Definición clara de los parámetros iniciales de búsqueda (emails, dominios, identidades o teléfonos).",
+                "pipe-s2-title": "Extracción OSINT", "pipe-s2-desc": "Barrido automatizado y manual sobre fuentes abiertas, registros públicos y foot-printing digital.",
+                "pipe-s3-title": "Correlación de Datos", "pipe-s3-desc": "Cruce de información obtenida para descartar falsos positivos y verificar coincidencias reales.",
+                "pipe-s4-title": "Informe Final", "pipe-s4-desc": "Consolidación de parámetros en un reporte estructurado y comprensible entregado por DM.",
+                "terms-heading": "Glosario & Metodología OSINT", "terms-sub": "Conceptos clave utilizados en el análisis de fuentes abiertas e inteligencia cibernética.",
+                "g-t1": "OSINT", "g-d1": "Open Source Intelligence: Recolección y análisis de datos obtenidos de fuentes públicas y abiertas para generar inteligencia estratégica.",
+                "g-t2": "Footprinting", "g-d2": "Proceso metódico para recopilar toda la información pública posible de una organización o infraestructura antes de una auditoría.",
+                "g-t3": "SOCMINT", "g-d3": "Social Media Intelligence: Técnicas especializadas en la agregación y análisis de datos en redes sociales y plataformas digitales.",
+                "g-t4": "Metadata Analysis", "g-d4": "Extracción de información oculta en archivos (EXIF, autor, dispositivo, coordenadas GPS) contenidos en documentos e imágenes.",
+                "g-t5": "Threat Intelligence", "g-d5": "Evaluación de ciberamenazas basada en el rastreo de vectores de ataque, infraestructura maliciosa e indicadores de compromiso (IoCs).",
+                "g-t6": "GEOINT", "g-d6": "Geospatial Intelligence: Análisis de imágenes satelitales, mapas de acceso público y referencias geográficas para la ubicación exacta.",
+                "g-t7": "Doxing", "g-d7": "Recopilación y publicación maliciosa de datos privados, identificativos o confidenciales de un individuo sin su consentimiento en internet.",
+                "faq-title": "Preguntas Frecuentes",
+                "faq-q1": "¿Cómo realizo una consulta de servicios o precios?", "faq-a1": "Puedes contactar directamente a través de Discord mediante mensaje directo (DM). Te responderemos lo antes posible con las tarifas personalizadas según tu caso.",
+                "faq-q2": "¿Qué métodos de pago son aceptados?", "faq-a2": "Aceptamos tarjetas de regalo (Gift Cards) para la tienda premium y criptomonedas (BTC, LTC, USDT) u otros métodos que se acordarán en privado vía DM para los vectores OSINT.",
+                "faq-q3": "¿Los datos recopilados se comparten con terceros?", "faq-a3": "No. Garantizamos confidencialidad absoluta y un entorno 100% blindado. Toda la información resultante se entrega únicamente al solicitante y se elimina permanentemente.",
+                "f-desc": "Plataforma de investigación, inteligencia cibernética y correlación de datos en fuentes abiertas.",
+                "f-title-links": "Enlaces Rápidos", "f-title-contact": "Contacto Directo", "f-contact-sub": "Atención privada por mensaje directo (DM).",
+                "system-status": "SISTEMA OSINT: OPERATIVO"
+            },
+            en: {
+                "nav-vectors": "OSINT Vectors", "nav-shop": "Premium Shop", "nav-pipeline": "Methodology", "nav-terms": "Glossary", "nav-faq": "FAQ", "nav-pricing": "Pricing & DM",
+                "hero-badge": "OPEN SOURCE INTELLIGENCE PLATFORM",
+                "hero-title": "Advanced Cyber OSINT & Data Analytics",
+                "hero-desc": "EZFNJ Service provides cutting-edge extraction of public information, digital identity correlation, and cyber infrastructure mapping.",
+                "btn-discord": "Check Prices via DM",
+                "m-platforms": "Tracked Platforms", "m-precision": "Correlation Accuracy", "m-delivery": "Delivery Time", "m-support": "Confidentiality",
+                "sec-title": "OSINT Investigation Vectors", "sec-desc": "Click on any vector to preview the intelligence data structure.",
+                "v-title-email": "Email OSINT & Breaches", "email-desc": "Advanced search for extraction of linked accounts, leaked passwords/hashes, usernames and linked phone numbers.",
+                "v-title-phone": "Phone Intelligence", "phone-desc": "Global number tracing, registered owner or alias, carrier network, time-zone mapping, and messenger linking.",
+                "v-title-username": "Username & Identity", "user-desc": "Massive footprint tracking across 500+ communities, hacking forums, gaming profiles and social sites.",
+                "v-title-password": "Password & Hash Analytics", "pass-desc": "Identification of cryptographic algorithms, simple hash reversing, patterns of reused passwords and entropy analysis.",
+                "v-title-ip": "IP & Network Recon", "ip-desc": "Precise IP geolocation, internet provider (ISP) detection, VPN/Proxy checks and target open ports.",
+                "v-title-metadata": "Public Records & Metadata", "doc-desc": "Extraction of hidden EXIF parameters in files/images (capture hardware, timestamps, author and exact GPS).",
+                "btn-preview": "Preview Data",
+                
+                // Tienda EN
+                "shop-title": "Digital Premium Shop",
+                "shop-desc": "Acquire your premium accounts with guaranteed lifetime support.",
+                "shop-life": "Lifetime",
+                "shop-method": "Gift Card Only",
+                "shop-once": "one-time payment",
+                "shop-dm-alert": "(ask via DM first before buying)",
+
+                "pipe-title": "Investigation Workflow", "pipe-sub": "Structured intake and verification process to ensure highly accurate intelligence data.",
+                "pipe-s1-title": "Intake & Scope", "pipe-s1-desc": "Clear definition of the initial target points (emails, domains, handles, or phone numbers).",
+                "pipe-s2-title": "OSINT Extraction", "pipe-s2-desc": "Automated and manual footprint scanning across OSINT nodes, open archives and public ledgers.",
+                "pipe-s3-title": "Data Correlation", "pipe-s3-desc": "Cross-referencing the collected datasets to filter false positives and establish real connections.",
+                "pipe-s4-title": "Final Report", "pipe-s4-desc": "Consolidation of metrics into an organized and structured document delivered directly via DM.",
+                "terms-heading": "OSINT Glossary & Methodology", "terms-sub": "Key concepts applied within open-source research and cyber intelligence operations.",
+                "g-t1": "OSINT", "g-d1": "Open Source Intelligence: Gathering and analysis of datasets from public and open environments to compile strategic intel.",
+                "g-t2": "Footprinting", "g-d2": "Methodical process used to gather all possible public information regarding an infrastructure before an audit.",
+                "g-t3": "SOCMINT", "g-d3": "Social Media Intelligence: Specialized tools and routines utilized to aggregate and analyze data from social spaces.",
+                "g-t4": "Metadata Analysis", "g-d4": "Extraction of deep layer file data (EXIF strings, author, device tags, GPS) found in pictures and documents.",
+                "g-t5": "Threat Intelligence", "g-d5": "Cyberthreat assessments based on mapping active attack loops, rogue infra and Indicators of Compromise (IoCs).",
+                "g-t6": "GEOINT", "g-d6": "Geospatial Intelligence: Analyzing satellite grids, open mapping stacks and physical anchors for precise target placement.",
+                "g-t7": "Doxing", "g-d7": "Malicious harvesting and public broadcast of private or identifying information belonging to an individual without consent.",
+                "faq-title": "Frequently Asked Questions",
+                "faq-q1": "How do I ask about services or pricing?", "faq-a1": "You can directly connect with us via Discord Direct Message (DM). We will reply shortly.",
+                "faq-q2": "What payment structures are allowed?", "faq-a2": "We accept Gift Cards for the premium store, and major crypto assets (BTC, LTC, USDT) for OSINT requests via DM.",
+                "faq-q3": "Is the generated data shared with third parties?", "faq-a3": "Absolutely not. We guarantee total confidentiality. All reporting structures are sent strictly to the client and scrubbed forever.",
+                "f-desc": "Open source investigation, cyber intelligence and data correlation platform.",
+                "f-title-links": "Quick Links", "f-title-contact": "Direct Contact", "f-contact-sub": "Private assistance via direct message (DM).",
+                "system-status": "OSINT SYSTEM: OPERATIONAL"
+            },
+            fr: {
+                "nav-vectors": "Vectores OSINT", "nav-shop": "Boutique Premium", "nav-pipeline": "Méthodologie", "nav-terms": "Glossaire", "nav-faq": "FAQ", "nav-pricing": "Prix & DM",
+                "hero-badge": "PLATEFORME D'INTELLIGENCE EN SOURCES OUVERTES",
+                "hero-title": "Intelligence Cyber OSINT & Analyse de Données",
+                "hero-desc": "EZFNJ Service propose des modules d'extraction publique, corrélation d'identités numériques et cartographie d'infrastructures.",
+                "btn-discord": "Consulter les prix par DM",
+                "m-platforms": "Plateformes Suivies", "m-precision": "Précision de Corrélation", "m-delivery": "Délai de Livraison", "m-support": "Confidentialité",
+                "sec-title": "Vectores de Recherche OSINT", "sec-desc": "Cliquez sur un vecteur pour voir la structure de prévisualisation des données.",
+                "btn-preview": "Aperçu",
+
+                // Tienda FR
+                "shop-title": "Digital Premium Shop",
+                "shop-desc": "Achetez vos comptes premium avec un support à vie garanti.",
+                "shop-life": "Lifetime",
+                "shop-method": "Carte Cadeau Uniquement",
+                "shop-once": "un seul paiement",
+                "shop-dm-alert": "(demander par DM d'abord avant d'acheter)",
+
+                "pipe-title": "Flux de travail de recherche", "pipe-sub": "Processus structuré de collecte pour assurer des données exactes.",
+                "pipe-s1-title": "Cible & Portée", "pipe-s1-desc": "Définition des critères d'entrée (e-mails, alias, téléphones, domaines).",
+                "pipe-s2-title": "Extraction OSINT", "pipe-s2-desc": "Scans automatisés et manuels des bases publiques, archives ouvertes et réseaux.",
+                "pipe-s3-title": "Corrélation", "pipe-s3-desc": "Croisement des bases de données pour supprimer les faux positifs.",
+                "pipe-s4-title": "Rapport Final", "pipe-s4-desc": "Rapport structuré et chiffré envoyé directement por message privé.",
+                "terms-heading": "Glossaire & Méthode OSINT", "terms-sub": "Concepts appliqués à la recherche cyber et renseignement.",
+                "g-t1": "OSINT", "g-d1": "Open Source Intelligence: Collecte et analyse de données de sources publiques pour le renseignement stratégique.",
+                "g-t2": "Footprinting", "g-d2": "Processus méthodique pour rassembler toutes les infos publiques d'une infrastructure.",
+                "g-t3": "SOCMINT", "g-d3": "Social Media Intelligence: Outils dédiés à la collecte et agrégation de traces sur les réseaux sociaux.",
+                "g-t4": "Metadata Analysis", "g-d4": "Extraction des données cachées (EXIF, auteur, GPS) dans les images et documents.",
+                "g-t5": "Threat Intelligence", "g-d5": "Analyse des cybermenaces via la recherche d'indicateurs de compromission (IoCs).",
+                "g-t6": "GEOINT", "g-d6": "Geospatial Intelligence: Analyse d'images satellites et repères cartographiques pour localisation.",
+                "g-t7": "Doxing", "g-d7": "Collecte et diffusion malveillante de données privées ou identitaires d'un individu sur le web.",
+                "faq-title": "Foire Aux Questions",
+                "faq-q1": "Comment s'informer sur les services ou tarifs ?", "faq-a1": "Contactez-nous directement par message privé (DM) sur Discord.",
+                "faq-q2": "Quels sont les modes de paiement ?", "faq-a2": "We accept Gift Cards for the premium store, and major crypto assets (BTC, LTC, USDT) for OSINT requests via DM.",
+                "faq-q3": "Les données sont-elles partagées ?", "faq-a3": "Non, le secret est total. Tous les fichiers de résultats appartiennent au client et sont détruits après envoi.",
+                "f-desc": "Plateforme d'investigation en sources ouvertes, cyberintelligence et corrélation de données.",
+                "f-title-links": "Liens Rapides", "f-title-contact": "Contact Direct", "f-contact-sub": "Assistance privée par message direct (DM).",
+                "system-status": "SYSTÈME OSINT: OPÉRATIONNEL"
+            },
+            de: {
+                "nav-vectors": "OSINT Vektoren", "nav-shop": "Premium Shop", "nav-pipeline": "Methodik", "nav-terms": "Glossar", "nav-faq": "FAQ", "nav-pricing": "Preise & DM",
+                "hero-badge": "OPEN SOURCE INTELLIGENCE PLATTFORM",
+                "hero-title": "Erweiterte Cyber OSINT & Datenanalyse",
+                "hero-desc": "EZFNJ Service bietet fortschrittliche OSINT-Erfassung, digitale Identitätszuordnung und Netzwerk-Recon.",
+                "btn-discord": "Preise via DM anfragen",
+                "m-platforms": "Überwachte Plattformen", "m-precision": "Korrelationseffizienz", "m-delivery": "Lieferzeit", "m-support": "Vertraulichkeit",
+                "sec-title": "OSINT Untersuchungsvektoren", "sec-desc": "Klicken Sie auf einen Vektor, um die Struktur der erhaltenen Daten anzuzeigen.",
+                "btn-preview": "Vorschau",
+
+                // Tienda DE
+                "shop-title": "Digital Premium Shop",
+                "shop-desc": "Erwerben Sie Ihre Premium-Konten mit garantiertem lebenslangem Support.",
+                "shop-life": "Lifetime",
+                "shop-method": "Nur Geschenkkarten",
+                "shop-once": "Einmalige Zahlung",
+                "shop-dm-alert": "(vor dem Kauf bitte zuerst per DM anfragen)",
+
+                "pipe-title": "Forschungs-Workflow", "pipe-sub": "Strukturierter Erfassungs- und Validierungsprozess für präzise Berichte.",
+                "pipe-s1-title": "Ziel & Umfang", "pipe-s1-desc": "Definition der Suchparameter (E-Mails, Telefonnummern, Domains, Aliase).",
+                "pipe-s2-title": "OSINT Extraktion", "pipe-s2-desc": "Automatisierte Scans öffentlicher Register, Datensätze und digitaler Spuren.",
+                "pipe-s3-title": "Datenkorrelation", "pipe-s3-desc": "Abgleich der Ergebnisse zur Eliminierung von Fehlalarmen.",
+                "pipe-s4-title": "Abschlussbericht", "pipe-s4-desc": "Strukturierte Aufbereitung aller Ergebnisse, sichere Übergabe per DM.",
+                "terms-heading": "OSINT-Glossar & Methodik", "terms-sub": "Kernkonzepte der Open-Source-Recherche und Cyber-Aufklärung.",
+                "g-t1": "OSINT", "g-d1": "Open Source Intelligence: Gewinnung und Analyse von Daten aus frei zugänglichen Quellen für strategische Zwecke.",
+                "g-t2": "Footprinting", "g-d2": "Systematische Erfassung aller verfügbaren Daten über die IT-Struktur eines Ziels.",
+                "g-t3": "SOCMINT", "g-d3": "Social Media Intelligence: Spezifische Datenaggregation und Verhaltensanalyse auf sozialen Netzwerken.",
+                "g-t4": "Metadata Analysis", "g-d4": "Auslesen verborgener Dateiinhalte (EXIF, GPS-Daten, Autor, Kamera) aus Medien.",
+                "g-t5": "Threat Intelligence", "g-d5": "Frühzeitige Erkennung von Cyberbedrohungen anhand von Indikatoren (IoCs).",
+                "g-t6": "GEOINT", "g-d6": "Geospatial Intelligence: Auswertung von Satellitenbildern und geografischen Daten zur Ortung.",
+                "g-t7": "Doxing", "g-d7": "Böswilliges Zusammentragen und Veröffentlichen privater personenbezogener Daten im Internet.",
+                "faq-title": "Häufig gestellte Fragen",
+                "faq-q1": "Wie frage ich Services oder Preise an?", "faq-a1": "Schreiben Sie uns direkt per Direktnachricht (DM) auf Discord an.",
+                "faq-q2": "Welche Zahlungsmethoden gibt es?", "faq-a2": "Wir akzeptieren Geschenkkarten für den Premium-Shop und Kryptowährungen für OSINT-Dienste über DM.",
+                "faq-q3": "Werden Daten an Dritte übermittelt?", "faq-a3": "Nein. Absolute Diskretion ist garantiert. Alle Berichte werden gelöscht, sobald der Kunde sie empfangen hat.",
+                "f-desc": "Plattform für Open-Source-Recherche, Cyber-Intelligenz und Datenkorrelation.",
+                "f-title-links": "Schnelllinks", "f-title-contact": "Direkter Kontakt", "f-contact-sub": "Private Unterstützung per Direktnachricht (DM).",
+                "system-status": "OSINT SYSTEM: BEREIT"
+            }
+        };
+
+        function changeLang(lang, btnElement) {
+            currentLang = lang;
+            document.querySelectorAll('.country-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            const dictionary = translations[lang];
+            if (!dictionary) return;
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dictionary[key]) {
+                    el.innerText = dictionary[key];
+                }
+            });
+        }
+
+        function openModal(key) {
+            const data = modalDatabase[currentLang][key];
+            if (!data) return;
+
+            document.getElementById('modalTitle').innerText = data.title;
+            const iconEl = document.getElementById('modalIcon');
+            iconEl.className = `fa-solid ${data.icon}`;
+
+            let htmlRows = '';
+            data.rows.forEach(r => {
+                htmlRows += `
+                    <div class="data-item">
+                        <span class="item-label">${r.label}</span>
+                        <span class="item-value">${r.val}</span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('modalDataContent').innerHTML = htmlRows;
+            document.getElementById('previewModalOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        function closeModal(e) {
+            document.getElementById('previewModalOverlay').classList.remove('active');
+            document.body.style.overflow = ''; 
+        }
+
+        function toggleFaq(header) {
+            header.parentElement.classList.toggle('active');
+        }
+
+        function filterTerms() {
+            const query = document.getElementById('termSearch').value.toLowerCase();
+            document.querySelectorAll('.term-box').forEach(term => {
+                term.style.display = term.innerText.toLowerCase().includes(query) ? 'block' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>
